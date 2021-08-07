@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: AWS Serverless
+
+Parameters:
+  Stage:
+    Type: String
+    Description: The stage where the application is running in, e.g., dev, prod.
+
+Conditions:
+  IsProd: !Equals [!Ref Stage, "prd"]
+
+Resources:
+  # ============== START API GATEWAY DECLARATION ================
+  # This role allows API Gateway to push execution and access logs to CloudWatch logs
+  ApiGatewayPushToCloudWatchRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      Description: "Push logs to CloudWatch logs from API Gateway"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - "apigateway.amazonaws.com"
+            Action: "sts:AssumeRole"
+      ManagedPolicyArns:
+        - !Sub "arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+
+  ApiAccount:
+    Type: "AWS::ApiGateway::Account"
+    Properties:
+      CloudWatchRoleArn: !GetAtt ApiGatewayPushToCloudWatchRole.Arn
+  # ============== END API GATEWAY DECLARATION ================
+
+# Outputs:
+

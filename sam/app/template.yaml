@@ -1,0 +1,53 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: "AWS::Serverless-2016-10-31"
+Description: AWS Microservices
+
+Parameters:
+  Stage:
+    Type: String
+    AllowedValues:
+      - dev
+      - stg
+      - prd
+    Default: dev
+    Description: The stage where the application is running in, e.g., dev, prod.
+  InternalApiKey:
+    Type: String
+    Description: The key that using to call between each services
+  HostAllow:
+    Type: String
+
+Resources:
+  BaseService:
+    Type: "AWS::Serverless::Application"
+    Properties:
+      Location: "base.template.yaml"
+      Parameters:
+        Stage: !Ref Stage
+  Common:
+    Type: 'AWS::Serverless::Application'
+    Properties:
+      Location: 'common.template.yaml'
+      Parameters:
+        Stage: !Ref Stage
+  AWSService:
+    Type: "AWS::Serverless::Application"
+    Properties:
+      Location: "../../services/aws-service/sam/app/template.yaml"
+      Parameters:
+        Stage: !Ref Stage
+        DependenciesLayer: !GetAtt Common.Outputs.DependenciesLayer
+        HostAllow: !Ref HostAllow
+    DependsOn:
+      - BaseService
+      - Common
+
+  FinalResources:
+    Type: "AWS::Serverless::Application"
+    Properties:
+      Location: "final.template.yaml"
+      Parameters:
+        Stage: !Ref Stage
+        InternalApiKeyValue: !Ref InternalApiKey
+    DependsOn:
+      - AWSService

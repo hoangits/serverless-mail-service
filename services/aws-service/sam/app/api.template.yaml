@@ -1,0 +1,102 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >-
+  This template creates API Gateway and Lambda resources for the AWS service.
+
+Metadata:
+  AWS::ServerlessRepo::Application:
+    Name: aws-api-service
+    Description: >-
+      This template creates API Gateway and Lambda resources for the AWS service.
+    Author: HoangLM
+    SemanticVersion: 1.0.0
+
+Parameters:
+  Stage:
+    Type: String
+    Description: The stage where the application is running in, e.g., dev, prod.
+  DependenciesLayer:
+    Type: String
+    Description: The global dependencies layer for lambda functions
+  HostAllow:
+    Type: String
+
+Conditions:
+  IsProd:
+    !Equals [!Ref Stage, "prd"]
+
+Globals:
+  Function:
+    Timeout: 120
+    MemorySize: 512
+    Tracing: Active
+    Runtime: nodejs12.x
+    Environment:
+      Variables:
+        NODE_PATH: /opt/nodejs/node8:/opt/nodejs:/opt/nodejs/node8/node_modules/:/opt/nodejs/node_modules:$LAMBDA_RUNTIME_DIR/node_modules
+        STAGE: !Ref  Stage
+        HOST_ALLOW: !Ref HostAllow
+        REGION_AWS: !Sub "${AWS::Region}"
+
+Resources:
+  MailClientAwsAPI:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+      DefinitionBody:
+        "Fn::Transform":
+          Name: "AWS::Include"
+          Parameters:
+            Location: ./client.oas30.yaml
+      TracingEnabled: !If [IsProd, true, false] # Enable AWS X-Ray to help debug API requests
+      MethodSettings:
+        - ResourcePath: '/*'
+          HttpMethod: '*'
+          # Disable data trace in production to avoid logging customer sensitive information from requests and responses
+          DataTraceEnabled: !If [IsProd, false, true]
+          LoggingLevel: INFO
+          MetricsEnabled: true
+          ThrottlingRateLimit: 5
+          ThrottlingBurstLimit: 10
+      AccessLogSetting:
+        DestinationArn: !Sub 'arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:${ApiAccessLogGroup}'
+        Format: '$context.identity.sourceIp $context.authorizer.claims.sub [$context.requestTime] "$context.httpMethod $context.resourcePath $context.protocol" $context.status $context.requestId $context.awsEndpointRequestId $context.xrayTraceId $context.responseLatency $context.integrationLatency "$context.error.message"'
+      OpenApiVersion: '3.0.0'
+      Cors:
+        AllowOrigin: "'*'"
+        AllowHeaders: "'authorization,content-type,pragma'"
+        AllowMethods: "'GET,POST,PUT,PATCH,DELETE'"
+
+  # ========== BEGIN DECLARATION FOR CLIENT FUNCTIONS =================
+  SendMailFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../../dist/send-mail/
+      Handler: index.handler
+      Layers:
+        - !Ref DependenciesLayer
+      Events:
+        SendMail:
+          Type: Api
+          Properties:
+            Path: /api/send-mail
+            Method: post
+            RestApiId: !Ref MailClientAwsAPI
+      Policies:
+        - AWSLambdaExecute
+        - Version: '2012-10-17'
+          Statement:
+            - Sid: "SESMailPolicy"
+              Effect: Allow
+              Action:
+                - "ses:SendEmail"
+                - "ses:SendRawEmail"
+                - "ses:SendTemplatedEmail"
+              Resource: "*"
+  # ========== END DECLARATION FOR CLIENT FUNCTIONS =================
+
+  ApiAccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/apigateway/AccessLog-${MailClientAwsAPI}
+      RetentionInDays: 365

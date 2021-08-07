@@ -1,0 +1,32 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >-
+  This template creates Global Common of service.
+
+Metadata:
+  AWS::ServerlessRepo::Application:
+    Name: aws-api-base
+    Description: >-
+      This template creates API Gateway and Lambda resources for the AWS service.
+    Author: HoangLM
+    SemanticVersion: 1.0.0
+
+Parameters:
+  Stage:
+    Type: String
+    Description: The stage where the application is running in, e.g., dev, prod.
+
+Resources:
+  MailDependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      Description: dependencies layer for user service
+      ContentUri: ../../services/layers/dist/dependencies/
+      CompatibleRuntimes:
+        - nodejs12.x
+      RetentionPolicy: Delete
+
+Outputs:
+  DependenciesLayer:
+    Description: Dependencies layer ARN
+    Value: !Ref MailDependenciesLayer

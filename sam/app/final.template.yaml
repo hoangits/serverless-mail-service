@@ -1,0 +1,25 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: AWS final resources which contains resources that need references from other services
+
+Parameters:
+  Stage:
+    Type: String
+    Description: The stage where the application is running in, e.g., dev, prod.
+  InternalApiKeyValue:
+    Type: String
+    Description: Internal API key for calling between each services
+    MaxLength: 100
+    MinLength: 20
+    NoEcho: true
+
+Resources:
+  # ============== START API GATEWAY USAGE PLAN AND API KEY DECLARATION ================
+  CadliteInternalAPIKeyValue:
+    Type: "AWS::SSM::Parameter"
+    Properties:
+      Name: !Sub "/cadlite/${Stage}/api/key/internal/value"
+      Type: "String"
+      Value: !Ref InternalApiKeyValue
+      Description: "Cadlite internal form API endpoint"
+  # ============== END API GATEWAY USAGE PLAN AND API KEY DECLARATION ========================

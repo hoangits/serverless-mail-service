@@ -1,0 +1,55 @@
+openapi: 3.0.1
+info:
+  title:
+    Fn::Sub: API-Client-Aws-${Stage}
+  version: '2020-11-26T08:58:30Z'
+
+paths:
+  /api/send-mail:
+    post:
+      x-amazon-apigateway-integration:
+        uri:
+          Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SendMailFunction.Arn}/invocations
+        httpMethod: 'POST'
+        type: aws_proxy
+        passthroughBehavior: never
+
+x-amazon-apigateway-gateway-responses:
+  DEFAULT_4XX:
+    statusCode: 400
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,socketid'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+    responseTemplates:
+      application/json: '{"message":$context.error.messageString}'
+  BAD_REQUEST_BODY:
+    statusCode: 400
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+      gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,socketid'"
+    responseTemplates:
+      application/json: '{"message":$context.error.validationErrorString}'
+  DEFAULT_5XX:
+    statusCode: 500
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,socketid'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+  EXPIRED_TOKEN:
+    statusCode: 401
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,socketid'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+  UNAUTHORIZED:
+    statusCode: 401
+    responseParameters:
+      gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,POST,GET,OPTIONS,PUT,PATCH'"
+      gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,socketid'"
+      gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+x-amazon-apigateway-request-validators:
+  Validate body:
+    validateRequestParameters: false
+    validateRequestBody: true

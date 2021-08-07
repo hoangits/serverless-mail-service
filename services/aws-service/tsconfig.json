@@ -1,0 +1,39 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "es2019",
+    "lib": ["es2019", "es2020.string", "es2020.symbol.wellknown", "dom"],
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "dist",
+    "baseUrl": "./src",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "typeRoots": ["./src/@types", "./node_modules/@types"],
+    "paths": {
+      "utils/*": ["./../../layers/src/dependencies/nodejs/utils/*"],
+      "helpers/*": ["./../../layers/src/dependencies/nodejs/helpers/*"],
+      "common/*": ["./../../layers/src/dependencies/nodejs/common/*"],
+      "models/*": ["./../../layers/src/dependencies/nodejs/models/*"],
+      "providers/*": ["./../../layers/src/dependencies/nodejs/providers/*"],
+      "data-sources/*": ["./../../layers/src/dependencies/nodejs/data-sources/*"],
+      "repositories/*": ["./../../layers/src/dependencies/nodejs/repositories/*"],
+      "validators/*": ["./../../layers/src/dependencies/nodejs/validators/*"],
+      "view-models/*": ["./../../layers/src/dependencies/nodejs/view-models/*"],
+      "errors/*": ["./../../layers/src/dependencies/nodejs/errors/*"],
+      "middlewares/*": ["./../../layers/src/dependencies/nodejs/middlewares/*"],
+      "usecases/*": ["./../../layers/src/dependencies/nodejs/usecases/*"]
+    },
+    "resolveJsonModule": true
+  },
+  "include": ["src/*.ts", "src/**/*.ts", "tests/*.ts", "tests/**/*.ts", "src/tests/teardown.js"],
+  "exclude": [
+    "bin/*",
+    "dependencies/*",
+    "test/*",
+    "layers/*"
+  ]
+}

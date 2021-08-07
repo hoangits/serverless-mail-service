@@ -1,0 +1,35 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "es2019",
+    "lib": ["es2019", "es2020.string", "es2020.symbol.wellknown", "dom"],
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "dist",
+    "baseUrl": "./src",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "typeRoots": ["./src/@types", "./node_modules/@types"],
+    "paths": {
+      "utils/*": ["dependencies/nodejs/utils/*"],
+      "helpers/*": ["dependencies/nodejs/helpers/*"],
+      "common/*": ["dependencies/nodejs/common/*"],
+      "models/*": ["dependencies/nodejs/models/*"],
+      "providers/*": ["dependencies/nodejs/providers/*"],
+      "data-sources/*": ["dependencies/nodejs/data-sources/*"],
+      "repositories/*": ["dependencies/nodejs/repositories/*"],
+      "validators/*": ["dependencies/nodejs/validators/*"],
+      "view-models/*": ["dependencies/nodejs/view-models/*"],
+      "errors/*": ["dependencies/nodejs/errors/*"],
+      "middlewares/*": ["dependencies/nodejs/middlewares/*"],
+      "usecases/*": ["dependencies/nodejs/usecases/*"],
+      "configs/*": ["dependencies/nodejs/configs/*"]
+    },
+    "resolveJsonModule": true
+  },
+  "include": ["src/*.ts", "src/**/*.ts", "tests/*.ts", "tests/**/*.ts", "src/tests/teardown.js"],
+  "exclude": ["bin/*"]
+}

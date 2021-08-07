@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: AWS Microservices
+
+Parameters:
+  Stage:
+    Type: String
+    Description: The stage where the application is running in, e.g., dev, prod.
+  DependenciesLayer:
+    Type: String
+    Description: Global layer
+  HostAllow:
+    Type: String
+
+Resources:
+  Api:
+    Type: 'AWS::Serverless::Application'
+    Properties:
+      Location: 'api.template.yaml'
+      Parameters:
+        Stage: !Ref Stage
+        DependenciesLayer: !Ref DependenciesLayer
+        HostAllow: !Ref HostAllow

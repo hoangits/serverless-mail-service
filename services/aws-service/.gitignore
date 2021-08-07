@@ -132,6 +132,7 @@ $RECYCLE.BIN/
 .vscode/*
 packaged.yaml
 dist
+bin/**/setting.json
 
+bin/**/**/setting.json
 *.xlsx#
-.history

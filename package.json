@@ -1,0 +1,44 @@
+{
+  "name": "wyw-serverless",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -p ."
+  },
+  "keywords": [],
+  "author": "HoangLM",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/joi": "^14.3.4",
+    "@types/lodash": "^4.14.167",
+    "@types/node": "^13.9.2",
+    "@types/nodemailer": "^6.4.0",
+    "@types/pino": "^5.20.0",
+    "@types/uuid": "^3.4.8",
+    "aws-sdk": "^2.642.0",
+    "lambda-warmer": "^1.2.1",
+    "middy": "^0.30.5",
+    "phin": "^3.4.1",
+    "pino": "^5.17.0",
+    "prettier": "^2.2.1",
+    "ts-loader": "^6.2.1",
+    "ts-node": "^8.7.0",
+    "tslint": "^5.20.1",
+    "tslint-config-airbnb": "^5.11.2",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^3.8.3",
+    "uuid": "^3.4.0"
+  },
+  "dependencies": {
+    "aws-lambda-multipart-parser": "0.1.3",
+    "@middy/core": "^1.4.0",
+    "@middy/do-not-wait-for-empty-event-loop": "^1.4.0",
+    "@middy/http-urlencode-body-parser": "^1.5.0",
+    "@types/validator": "^13.1.3",
+    "axios": "^0.21.1",
+    "joi": "^14.3.1",
+    "lodash": "^4.17.20",
+    "sequelize": "^6.3.5"
+  }
+}
